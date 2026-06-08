@@ -14,14 +14,23 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:layout_marginBottom="32dp"/>
+        android:layout_marginBottom="20dp"/>
 
     <Button
         android:id="@+id/btnAddTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Agregar Nueva Tarea"/>
+        android:text="Agregar Nueva Tarea"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:id="@+id/txListado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lista de tareas"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
 
     <ListView
         android:id="@+id/listTasks"

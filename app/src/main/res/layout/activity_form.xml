@@ -6,6 +6,15 @@
     android:gravity="center"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/txListado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nueva tarea"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"/>
+
     <EditText
         android:id="@+id/etTaskName"
         android:layout_width="match_parent"
@@ -23,7 +32,9 @@
         android:id="@+id/btnSaveTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Guardar"/>
+        android:text="Guardar"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"/>
 
     <Button
         android:id="@+id/btnBack"
