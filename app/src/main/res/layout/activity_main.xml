@@ -10,7 +10,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Gestor de Tareas"
+        android:text="Bienvenido"
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
