@@ -8,6 +8,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.FirebaseAuth
 
 class FormActivity : AppCompatActivity() {
 
@@ -21,36 +23,69 @@ class FormActivity : AppCompatActivity() {
         val btnSaveTask = findViewById<Button>(R.id.btnSaveTask)
         val btnBack = findViewById<Button>(R.id.btnBack)
 
-        val sharedPreferences: SharedPreferences =
-            getSharedPreferences("listTasks", Context.MODE_PRIVATE)
+        val auth = FirebaseAuth.getInstance()
+
+        val database = FirebaseDatabase.getInstance()
 
         btnSaveTask.setOnClickListener {
 
             val name = etTaskName.text.toString().trim()
-            val description = etTaskDescription.text.toString().trim()
+
+            val description =
+                etTaskDescription.text.toString().trim()
 
             if (name.isEmpty()) {
-                etTaskName.error = "Ingrese el nombre de la tarea"
+
+                etTaskName.error =
+                    "Ingrese el nombre de la tarea"
+
                 return@setOnClickListener
             }
 
-            val tasks =
-                sharedPreferences.getStringSet("tasks", mutableSetOf())
-                    ?.toMutableSet() ?: mutableSetOf()
+            val userId =
+                auth.currentUser?.uid
 
-            tasks.add("$name|$description")
+            if (userId == null) {
 
-            sharedPreferences.edit()
-                .putStringSet("tasks", tasks)
-                .apply()
+                Toast.makeText(
+                    this,
+                    "Debe iniciar sesión",
+                    Toast.LENGTH_SHORT
+                ).show()
 
-            Toast.makeText(
-                this,
-                "Tarea guardada",
-                Toast.LENGTH_SHORT
-            ).show()
+                return@setOnClickListener
+            }
 
-            finish()
+            val taskId =
+                database.reference
+                    .child("users")
+                    .child(userId)
+                    .child("tasks")
+                    .push()
+                    .key
+
+            if (taskId != null) {
+
+                val task = Task(
+                    name,
+                    description
+                )
+
+                database.reference
+                    .child("users")
+                    .child(userId)
+                    .child("tasks")
+                    .child(taskId)
+                    .setValue(task)
+
+                Toast.makeText(
+                    this,
+                    "Tarea guardada",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                finish()
+            }
         }
 
         btnBack.setOnClickListener {

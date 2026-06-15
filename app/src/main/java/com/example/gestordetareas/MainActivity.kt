@@ -1,8 +1,6 @@
 package com.example.gestordetareas
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -12,25 +10,46 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var listTasks: ListView
-    private lateinit var sharedPreferences: SharedPreferences
+
+    private lateinit var database: DatabaseReference
+
+    private val taskList = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         listTasks = findViewById(R.id.listTasks)
 
-        sharedPreferences =
-            getSharedPreferences("listTasks", Context.MODE_PRIVATE)
-
-        val btnAddTask = findViewById<Button>(R.id.btnAddTask)
+        val btnAddTask =
+            findViewById<Button>(R.id.btnAddTask)
 
         val btnLogout =
             findViewById<ImageButton>(R.id.btnLogout)
+
+        val userId =
+            FirebaseAuth.getInstance()
+                .currentUser
+                ?.uid
+
+        if (userId != null) {
+
+            database = FirebaseDatabase
+                .getInstance()
+
+                .getReference("users")
+
+                .child(userId)
+
+                .child("tasks")
+        }
 
         btnAddTask.setOnClickListener {
 
@@ -45,11 +64,17 @@ class MainActivity : AppCompatActivity() {
         btnLogout.setOnClickListener {
 
             AlertDialog.Builder(this)
+
                 .setTitle("Cerrar sesión")
-                .setMessage("¿Desea cerrar la sesión?")
+
+                .setMessage(
+                    "¿Desea cerrar la sesión?"
+                )
+
                 .setPositiveButton("Sí") { _, _ ->
 
-                    FirebaseAuth.getInstance().signOut()
+                    FirebaseAuth.getInstance()
+                        .signOut()
 
                     Toast.makeText(
                         this,
@@ -67,47 +92,73 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
 
-                .setNegativeButton("No", null)
+                .setNegativeButton(
+                    "No",
+                    null
+                )
+
                 .show()
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
         loadTasks()
     }
 
     private fun loadTasks() {
 
-        val savedTasks =
-            sharedPreferences.getStringSet(
-                "tasks",
-                emptySet()
-            ) ?: emptySet()
+        database.addValueEventListener(
 
-        val taskList = ArrayList<String>()
+            object : ValueEventListener {
 
-        for (task in savedTasks) {
+                override fun onDataChange(
+                    snapshot: DataSnapshot
+                ) {
 
-            val data = task.split("|")
+                    taskList.clear()
 
-            val name =
-                data.getOrElse(0) { "" }
+                    for (data in snapshot.children) {
 
-            val description =
-                data.getOrElse(1) { "" }
+                        val task =
+                            data.getValue(
+                                Task::class.java
+                            )
 
-            taskList.add(
-                "📌 $name\n$description"
-            )
-        }
+                        task?.let {
 
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            taskList
+                            taskList.add(
+                                "📌 ${it.name}\n${it.description}"
+                            )
+                        }
+                    }
+
+                    val adapter =
+                        ArrayAdapter(
+
+                            this@MainActivity,
+
+                            android.R.layout.simple_list_item_1,
+
+                            taskList
+                        )
+
+                    listTasks.adapter =
+                        adapter
+                }
+
+                override fun onCancelled(
+                    error: DatabaseError
+                ) {
+
+                    Toast.makeText(
+
+                        this@MainActivity,
+
+                        error.message,
+
+                        Toast.LENGTH_SHORT
+
+                    ).show()
+                }
+            }
         )
-
-        listTasks.adapter = adapter
     }
 }
