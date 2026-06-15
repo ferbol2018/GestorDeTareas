@@ -3,7 +3,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="20dp">
+    android:layout_marginTop="20dp"
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +19,8 @@
             android:text="Nueva tarea"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/text_primary"/>
 
         <EditText
             android:id="@+id/etTaskName"
@@ -40,7 +42,8 @@
             android:text="Asociar ubicación a la tarea:"
             android:textSize="16sp"
             android:layout_marginTop="16dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"/>
 
         <TextView
             android:id="@+id/tvLocation"
@@ -60,14 +63,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Guardar"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/accent"/>
 
         <Button
             android:id="@+id/btnBack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Volver"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/primary"
+            android:textColor="@color/white"/>
 
     </LinearLayout>
 
