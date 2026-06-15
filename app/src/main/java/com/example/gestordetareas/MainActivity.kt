@@ -6,8 +6,12 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ListView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,10 +29,46 @@ class MainActivity : AppCompatActivity() {
 
         val btnAddTask = findViewById<Button>(R.id.btnAddTask)
 
+        val btnLogout =
+            findViewById<ImageButton>(R.id.btnLogout)
+
         btnAddTask.setOnClickListener {
+
             startActivity(
-                Intent(this, FormActivity::class.java)
+                Intent(
+                    this,
+                    FormActivity::class.java
+                )
             )
+        }
+
+        btnLogout.setOnClickListener {
+
+            AlertDialog.Builder(this)
+                .setTitle("Cerrar sesión")
+                .setMessage("¿Desea cerrar la sesión?")
+                .setPositiveButton("Sí") { _, _ ->
+
+                    FirebaseAuth.getInstance().signOut()
+
+                    Toast.makeText(
+                        this,
+                        "Sesión cerrada",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    startActivity(
+                        Intent(
+                            this,
+                            Login::class.java
+                        )
+                    )
+
+                    finish()
+                }
+
+                .setNegativeButton("No", null)
+                .show()
         }
     }
 
@@ -40,8 +80,10 @@ class MainActivity : AppCompatActivity() {
     private fun loadTasks() {
 
         val savedTasks =
-            sharedPreferences.getStringSet("tasks", emptySet())
-                ?: emptySet()
+            sharedPreferences.getStringSet(
+                "tasks",
+                emptySet()
+            ) ?: emptySet()
 
         val taskList = ArrayList<String>()
 
@@ -49,8 +91,11 @@ class MainActivity : AppCompatActivity() {
 
             val data = task.split("|")
 
-            val name = data.getOrElse(0) { "" }
-            val description = data.getOrElse(1) { "" }
+            val name =
+                data.getOrElse(0) { "" }
+
+            val description =
+                data.getOrElse(1) { "" }
 
             taskList.add(
                 "📌 $name\n$description"
